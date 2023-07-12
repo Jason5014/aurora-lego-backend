@@ -53,7 +53,7 @@ jobs:
           # * 启动服务
           # * 清理工作，删除 .env 退出 docker 账号
           script: |
-            docker login --username=${{ secrets.ARC_USERNAME }} --password=${{ secrets.ACR_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+            docker login -u ${{ secrets.ARC_USERNAME }} -p ${{ secrets.ACR_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
             cd ~/aurora/aurora-backend
             docker-compose -f docker-compose-online.yml down
             docker-compose -f docker-compose-online.yml up -d
