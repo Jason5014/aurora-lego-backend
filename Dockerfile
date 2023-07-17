@@ -1,3 +1,5 @@
+#!bin/bash
+
 FROM node:16-alpine
 RUN mkdir -p /usr/src/app
 # RUN npm set registry https://registry.npm.taobao.org
