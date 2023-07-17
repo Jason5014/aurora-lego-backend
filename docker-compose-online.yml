@@ -20,7 +20,7 @@ services:
     env_file:
       - .env
   aurora-backend:
-    image: registry.cn-hangzhou.aliyuncs.com/jason-aurora/aurora:0.0.2
+    image: registry.cn-hangzhou.aliyuncs.com/jason-aurora/aurora:{{tag}}
     container_name: aurora-backend
     ports:
       - 7002:7001
