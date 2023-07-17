@@ -38,7 +38,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PWD }}
-          source: "aurora-backend"
+          source: "aurora-backend/**.*"
           target: "~/aurora"
       # 通过 ssh 登录服务器并重启服务
       - name: Executing ssh and restart docker
@@ -60,5 +60,6 @@ jobs:
             docker-compose -f docker-compose-online.yml up -d
             rm -rf .env
             docker logout registry.cn-hangzhou.aliyuncs.com
+            docker ps -a
 
 
