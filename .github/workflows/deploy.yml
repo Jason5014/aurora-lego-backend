@@ -57,7 +57,7 @@ jobs:
             docker login -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
             cd ~/aurora/aurora-backend
             docker-compose -f docker-compose-online.yml down
-            docker-compose -f docker-compose-online.yml up -d
+            docker-compose -f docker-compose-online.yml up
             docker logout registry.cn-hangzhou.aliyuncs.com
             docker ps -a
 
