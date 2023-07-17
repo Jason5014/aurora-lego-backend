@@ -9,7 +9,6 @@ logs/
 .vscode
 .docker-volumns/
 .docker-volumes/
-.github/workflows/nodejs.yml
 .env
 *.swp
 !*.lock

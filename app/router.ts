@@ -39,3 +39,4 @@ export default (app: Application) => {
   router.post('/utils/upload', controller.utils.uploadMutipleFiles);
   router.get('/pages/:idAndUuid', controller.utils.renderH5Page);
 };
+

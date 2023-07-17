@@ -1,0 +1,64 @@
+name: Deploy app to server
+
+on: [push]
+
+jobs:
+  depoly-and-restart:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout 代码
+      - name: Checkout git source
+        uses: actions/checkout@v2
+      # 创建 env 文件
+      - name: create env file
+        run: |
+          touch .env
+          echo AL_ACCESS_KEY_ID=${{ secrets.AL_ACCESS_KEY_ID }} >> .env
+          echo AL_ACCESS_KEY_SECRET=${{ secrets.AL_ACCESS_KEY_SECRET }} >> .env
+          echo GITEE_CLIENT_ID=${{ secrets.GITEE_CLIENT_ID }} >> .env
+          echo GITEE_CLIENT_SECRET=${{ secrets.GITEE_CLIENT_SECRET }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_INITDB_ROOT_USERNAME }} >> .env
+          echo MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }} >> .env
+          echo MONGO_DB_USERNAME=${{ secrets.MONGO_DB_USERNAME }} >> .env
+          echo MONGO_DB_PASSWORD=${{ secrets.MONGO_DB_PASSWORD }} >> .env
+          echo REDIS_DB_PASSWORD=${{ secrets.REDIS_DB_PASSWORD }} >> .env
+      # 拷贝文件到文件夹：.env, docker-compose-online.yml, mongo-entrypoint
+      - name: Copy files in to one folder
+        run: |
+          mkdir aurora-backend
+          cp .env docker-compose-online.yml aurora-backend
+          cp -r mongo-entrypoint aurora-backend
+          ls -la aurora-backend
+      # 通过 scp 拷贝文件到服务器上
+      - name: Copy aurora-backup folder via scp
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PWD }}
+          source: "aurora-backend"
+          target: "~/aurora"
+      # 通过 ssh 登录服务器并重启服务
+      - name: Executing ssh and restart docker
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PWD }}
+          script_stop: true
+          # * 登录 阿里云 ACR
+          # * 进入文件夹
+          # * 停止服务
+          # * 启动服务
+          # * 清理工作，删除 .env 退出 docker 账号
+          script: |
+            docker login -u ${{ secrets.ACR_USERNAME }} -p ${{ secrets.ACR_PASSWORD }} registry.cn-hangzhou.aliyuncs.com
+            cd ~/aurora/aurora-backend
+            ls -al
+            docker-compose -f docker-compose-online.yml down
+            docker-compose -f docker-compose-online.yml up -d
+            docker logout registry.cn-hangzhou.aliyuncs.com
+            docker ps -a
+
+

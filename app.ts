@@ -53,3 +53,4 @@ export default class AppBoot implements IBoot {
     console.log('middleware', this.app.middleware);
   }
 }
+
